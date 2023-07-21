@@ -1,0 +1,32 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: clickhouse
+    image: docker.io/centos:7
+    pre_build_image: true
+    command: /usr/sbin/init
+    privileged: true
+    networks:
+      - name: host
+
+  - name: centos8
+    image: docker.io/centos:8
+    pre_build_image: true
+    command: /usr/sbin/init
+    privileged: true
+    networks:
+      - name: host
+
+  - name: ubuntu
+    image: docker.io/pycontribs/ubuntu:latest
+    pre_build_image: true
+    networks:
+      - name: host
+
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

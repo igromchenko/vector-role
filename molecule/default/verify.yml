@@ -1,0 +1,30 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts:
+    - centos8
+    - ubuntu
+  tasks:
+    - name: Include default vars
+      ansible.builtin.include_vars:
+        dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/"
+        extensions:
+          - 'yml'
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+      register: service_facts
+    - name: SysV assertion
+      ansible.builtin.assert:
+        that:
+          - "{{ vector_version is match ('^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$') }}"
+          - "{{ vector_version == '0.31.0' }}"
+          - "{{ ansible_facts.services['vector'].state == 'running' }}"
+      when: ansible_service_mgr == "sysvinit"
+    - name: SystemD assertion
+      ansible.builtin.assert:
+        that:
+          - "{{ vector_version is match ('^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$') }}"
+          - "{{ vector_version == '0.31.0' }}"
+          - "{{ ansible_facts.services['vector.service'].state == 'running' }}"
+      when: ansible_service_mgr == "systemd"

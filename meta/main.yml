@@ -1,0 +1,9 @@
+galaxy_info:
+  role_name: vector
+  namespace: igromchenko
+  author: Иван Громченко
+  description: Роль устанавливает Vector выбранной пользователем версии
+  license: MIT
+  min_ansible_version: 2.1
+  galaxy_tags: []
+dependencies: []
