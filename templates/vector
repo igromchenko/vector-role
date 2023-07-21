@@ -1,0 +1,42 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          vectore
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts Vector
+### END INIT INFO
+
+NAME=vector
+DAEMON=/opt/vector-x86_64-unknown-linux-musl/bin/$NAME
+DAEMON_ARGS="-C /opt/vector-x86_64-unknown-linux-musl/config/"
+PIDFILE=/var/run/$NAME.pid
+
+. /lib/lsb/init-functions
+
+case "$1" in
+  start)
+    log_daemon_msg "Starting $NAME"
+    start-stop-daemon --quiet --oknodo --background --no-close --make-pidfile --pidfile $PIDFILE --start --exec $DAEMON -- $DAEMON_ARGS > /var/log/$NAME.log 2>&1
+    RC=$?
+    sleep 3 && [ "$(pidof $NAME)" != "$(cat $PIDFILE)" ] && exit 1
+    exit $RC
+    ;;
+  stop)
+    log_daemon_msg "Stopping $NAME"
+    start-stop-daemon --stop --quiet --oknodo --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME 2> /dev/null
+    RC=$?
+    rm -f $PIDFILE 2> /dev/null
+    exit $RC
+    ;;
+  status)
+    status_of_proc $DAEMON $NAME
+    exit $?
+    ;;
+  *)
+    echo "Usage: service $NAME {start|stop|status}"
+    exit 1
+    ;;
+esac

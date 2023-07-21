@@ -1,0 +1,13 @@
+data_dir = "/opt/vector_data"
+
+[sources.vector]
+type = "journald"
+include_units = [ "vector" ]
+
+[sinks.clickhouse]
+type = "clickhouse"
+inputs = [ "vector" ]
+database = "logs"
+endpoint = "http://{{ clickhouse_host }}:8123"
+table = "vector"
+skip_unknown_fields = true
